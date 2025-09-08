@@ -175,8 +175,9 @@ module.exports = {
                 },
             },
             fontFamily: {
-                heading: undefined,
-                body: undefined,
+                // sans: ['Inter_400Regular', 'sans-serif'],
+                // heading:  ['Inter_400Regular', 'sans-serif'],
+                // body:  ['Inter_400Regular', 'sans-serif'],
                 mono: undefined,
                 jakarta: ['var(--font-plus-jakarta-sans)'],
                 roboto: ['var(--font-roboto)'],
@@ -185,7 +186,15 @@ module.exports = {
                 'space-mono': ['var(--font-space-mono)'],
             },
             fontWeight: {
-                extrablack: '950',
+                thin: '100',
+                extralight: '200',
+                light: '300',
+                normal: '400',
+                medium: '500',
+                semibold: '600',
+                bold: '700',
+                extrabold: '800',
+                black: '900',
             },
             fontSize: {
                 '2xs': '10px',

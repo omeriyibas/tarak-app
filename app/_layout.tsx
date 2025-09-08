@@ -1,45 +1,72 @@
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import 'react-native-reanimated';
-import { useEffect, useState } from "react";
-import { Slot, SplashScreen, useRouter } from "expo-router";
-import { useFonts } from "expo-font";
-import { FontAwesome } from "@expo/vector-icons";
+import {useEffect, useState} from "react";
+import {Slot, SplashScreen} from "expo-router";
+import {useFonts} from "expo-font";
 import "@/global.css"
+import {Inter_400Regular, Inter_700Bold} from "@expo-google-fonts/inter";
+import {Provider} from "react-redux";
+import {bootstrapAuth} from "@/src/bootstrap/auth";
+import {bootstrapProgress} from "@/src/bootstrap/progress";
+import store from "@/src/store/store";
+import {GluestackUIProvider} from "@/src/components/ui/gluestack-ui-provider";
+
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    const [loaded, error] = useFonts({
-        SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-        ...FontAwesome.font,
+
+
+    let [fontsLoaded, error] = useFonts({
+        myFont: Inter_400Regular,
+        myFontBold: Inter_700Bold,
+        // Inter_400Regular
     });
 
-    const [styleLoaded, setStyleLoaded] = useState(false);
+
+    // const [styleLoaded, setStyleLoaded] = useState(false);
     const [isReady, setIsReady] = useState(false); // Add this state to track readiness
 
     useEffect(() => {
         if (error) throw error;
     }, [error]);
 
+
+
     useEffect(() => {
-        if (loaded) {
-            SplashScreen.hideAsync();
-            setIsReady(true); // Mark layout as ready once fonts are loaded
-        }
-    }, [loaded]);
+        let alive = true;
+        (async () => {
+            if (!fontsLoaded) return;
+            // 1) Kimlik kontrolü (depodan token çek, gerekiyorsa refresh)
+            await bootstrapAuth();
+
+            await bootstrapProgress()
+
+
+
+            if (alive) {
+                await SplashScreen.hideAsync();
+                setIsReady(true);
+            }
+        })();
+        return () => {
+            alive = false;
+        };
+    }, [fontsLoaded]);
 
     if (!isReady) {
         return null; // Wait until everything is ready
     }
 
-    return <RootLayoutNav />;
+    return <RootLayoutNav/>;
 }
 
 function RootLayoutNav() {
 
     return (
         <GluestackUIProvider>
-            <Slot />
+            <Provider store={store}>
+                <Slot/>
+            </Provider>
         </GluestackUIProvider>
     );
 }
