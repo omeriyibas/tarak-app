@@ -26,7 +26,11 @@ const useProgress = ({flow}:Props) => {
     //
     useEffect(() => {
         if (nextStep) {
-            router.replace("/screens/step/" + SCREEN_NAMES.details[currentStep - 1])
+            if (currentStep !== SCREEN_NAMES.details.length){
+                router.replace("/screens/step/" + SCREEN_NAMES.details[currentStep - 1])
+            }else{
+                router.replace("/screens/other/FinishScreen")
+            }
         }
     }, [nextStep]);
 

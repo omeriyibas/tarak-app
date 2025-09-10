@@ -33,11 +33,9 @@ const DayScreen = () => {
         <VStack className={"justify-between flex-1"}>
             <VStack className={"gap-5"}>
                 {DAYS.map((day, index) => (
-                    <Box className={"h-12"}>
-                        <CheckButton1 key={index} onPress={() => handleActivate(index)} active={actives[index]}
-                                      text={day}
-                                      icon={actives[index] ? CheckIcon : CheckDeactiveIcon}/>
-                    </Box>
+                    <CheckButton1 key={index} onPress={() => handleActivate(index)} active={actives[index]}
+                                  text={day}
+                                  icon={actives[index] ? CheckIcon : CheckDeactiveIcon}/>
                 ))}
                 {/*<Text1 text={"Screen 1"}/>*/}
             </VStack>

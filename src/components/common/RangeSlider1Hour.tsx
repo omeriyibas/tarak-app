@@ -1,4 +1,3 @@
-import RangeSlider from "react-native-fast-range-slider/src";
 import {Gesture, GestureDetector, GestureHandlerRootView} from "react-native-gesture-handler";
 import Animated, {
     clamp, interpolate,
@@ -8,13 +7,12 @@ import Animated, {
     withSpring,
     withTiming
 } from "react-native-reanimated";
-import {Dimensions, StyleSheet, Text, View} from "react-native";
-import React, {useState} from "react";
+import {StyleSheet, Text, View} from "react-native";
+import React, {useState, useEffect} from "react";
 
 
-const {width: SCREEN_WIDTH} = Dimensions.get('window');
-const SLIDER_WIDTH = SCREEN_WIDTH - 45;
 const THUMB_SIZE = 32;
+const SLIDER_WIDTH = 200; // Fixed width for calculations
 
 
 type Props = {
@@ -49,17 +47,26 @@ const RangeSlider1Hour = ({
 
     const [minValue, setMinValue] = useState("10:00")
     const [maxValue, setMaxValue] = useState("22:00")
+    const [containerWidth, setContainerWidth] = useState(null) // Will be set by onLayout
 
     const isMinActive = useSharedValue(false);
-    const minThumbPosition = useSharedValue(((initialMin - min) / (max - min)) * SLIDER_WIDTH);
+    const minThumbPosition = useSharedValue(((initialMin - min) / (max - min)) * containerWidth);
     const minThumbScale = useSharedValue(1);
     const minThumbRotation = useSharedValue(0);
 
 
     const isMaxActive = useSharedValue(false);
-    const maxThumbPosition = useSharedValue(((initialMax - min) / (max - min)) * SLIDER_WIDTH);
+    const maxThumbPosition = useSharedValue(((initialMax - min) / (max - min)) * containerWidth);
     const maxThumbScale = useSharedValue(1);
     const maxThumbRotation = useSharedValue(0);
+
+    // Update thumb positions when containerWidth changes
+    useEffect(() => {
+        if (containerWidth && containerWidth > 0) {
+            minThumbPosition.value = ((initialMin - min) / (max - min)) * containerWidth;
+            maxThumbPosition.value = ((initialMax - min) / (max - min)) * containerWidth;
+        }
+    }, [containerWidth, initialMin, initialMax, min, max]);
 
     function percenToTime(yuzde) {
         const baslangic = 6;    // 06:00
@@ -92,16 +99,16 @@ const RangeSlider1Hour = ({
     };
 
 
-    const positionToValue = (position) => {
+    const positionToValue = (position, containerWidth) => {
         'worklet';
-        const percentage = clamp(position / SLIDER_WIDTH, 0, 1);
+        const percentage = clamp(position / containerWidth, 0, 1);
         const value = min + percentage * (max - min);
         return Math.round(value / step) * step;
     };
 
-    const valueToPosition = (value) => {
+    const valueToPosition = (value, containerWidth) => {
         'worklet';
-        return ((value - min) / (max - min)) * SLIDER_WIDTH;
+        return ((value - min) / (max - min)) * containerWidth;
     };
 
     const minPanGesture = Gesture.Pan().onBegin(() => {
@@ -115,7 +122,7 @@ const RangeSlider1Hour = ({
         const newPosition = clamp(
             minThumbPosition.value + event.changeX,
             0,
-            maxThumbPosition.value - valueToPosition(step)
+            maxThumbPosition.value - valueToPosition(step, containerWidth)
         );
 
         minThumbPosition.value = newPosition;
@@ -123,12 +130,12 @@ const RangeSlider1Hour = ({
         // Color and opacity changes based on position
         // selectedTrackOpacity.value = interpolate(
         //     newPosition,
-        //     [0, SLIDER_WIDTH / 2, SLIDER_WIDTH],
+        //     [0, containerWidth / 2, containerWidth],
         //     [0.6, 1, 0.8]
         // );
 
-        const minVal = positionToValue(newPosition);
-        const maxVal = positionToValue(maxThumbPosition.value);
+        const minVal = positionToValue(newPosition, containerWidth);
+        const maxVal = positionToValue(maxThumbPosition.value, containerWidth);
 
         runOnJS(updateValues)(minVal, maxVal);
     })
@@ -149,8 +156,8 @@ const RangeSlider1Hour = ({
 
         const newPosition = clamp(
             maxThumbPosition.value + event.changeX,
-            minThumbPosition.value + valueToPosition(step),
-            SLIDER_WIDTH
+            minThumbPosition.value + valueToPosition(step, containerWidth),
+            containerWidth
         );
 
         maxThumbPosition.value = newPosition;
@@ -158,12 +165,12 @@ const RangeSlider1Hour = ({
         // Color and opacity changes based on position
         // selectedTrackOpacity.value = interpolate(
         //     newPosition,
-        //     [0, SLIDER_WIDTH / 2, SLIDER_WIDTH],
+        //     [0, containerWidth / 2, containerWidth],
         //     [0.6, 1, 0.8]
         // );
 
-        const minVal = positionToValue(minThumbPosition.value);
-        const maxVal = positionToValue(newPosition);
+        const minVal = positionToValue(minThumbPosition.value, containerWidth);
+        const maxVal = positionToValue(newPosition, containerWidth);
 
         runOnJS(updateValues)(minVal, maxVal);
     })
@@ -185,7 +192,7 @@ const RangeSlider1Hour = ({
                 {translateX: minThumbPosition.value - THUMB_SIZE / 2},
                 {scale: minThumbScale.value},
                 {rotate: `${minThumbRotation.value}deg`},
-            ],
+            ] as any,
             // backgroundColor,
             // borderColor: isMinActive.value ? '#FF6B6B' : 'white',
         };
@@ -203,7 +210,7 @@ const RangeSlider1Hour = ({
                 {translateX: maxThumbPosition.value - THUMB_SIZE / 2},
                 {scale: maxThumbScale.value},
                 {rotate: `${maxThumbRotation.value}deg`},
-            ],
+            ] as any,
             // backgroundColor,
             // borderColor: isMaxActive.value ? '#FF6B6B' : 'white',
         };
@@ -227,7 +234,13 @@ const RangeSlider1Hour = ({
     });
 
 
-    return (<GestureHandlerRootView style={styles.sliderContainer}>
+    return (<GestureHandlerRootView
+        style={styles.sliderContainer}
+        onLayout={(event) => {
+            const { width } = event.nativeEvent.layout;
+            setContainerWidth(width);
+        }}
+    >
 
 
             <View style={styles.track}/>
@@ -259,10 +272,13 @@ const RangeSlider1Hour = ({
 const styles = StyleSheet.create({
     sliderContainer: {
         height: 60,
-        width: SLIDER_WIDTH,
+        width: '100%',
         justifyContent: 'center',
         borderRadius: 30,
-        paddingHorizontal: 10,
+
+
+        // paddingHorizontal: 20,
+        // marginHorizontal: 50,
     },
     thumb: {
         position: 'absolute',
@@ -315,6 +331,9 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.2,
         shadowRadius: 2,
+        // left: 100,
+
+
     },
     scale: {
         flexDirection: 'row',

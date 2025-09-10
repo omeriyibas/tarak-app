@@ -33,7 +33,7 @@ const AdresScreen = () => {
     const [photoSheetIsOpen, setPhotoSheetIsOpen] = useState(false)
     const {control, handleSubmit} = useForm<FormValues>({
         resolver: zodResolver(schema) as any,
-        defaultValues: { name: "" },
+        defaultValues: {name: ""},
     });
 
     const {pickImage} = UseImagePicker({});
@@ -57,13 +57,12 @@ const AdresScreen = () => {
     };
 
 
-
     return (
         <>
             <PhotoSheet isOpen={photoSheetIsOpen} setIsOpen={setPhotoSheetIsOpen}/>
-            <VStack className={"justify-between flex-1"}>
-                <VStack className={"gap-10"}>
-                    <VStack className={"items-center gap-3"}>
+            <Box className={"justify-between flex-1"}>
+                <Box className={"gap-10"}>
+                    <Box className={"items-center gap-3"}>
                         <Pressable
                             className={"bg-gray-200 h-40 w-40 rounded-xl justify-center items-center"}
                             onTouchEnd={handleImagePick}
@@ -79,16 +78,16 @@ const AdresScreen = () => {
                             )}
                         </Pressable>
                         <Text1 text={"Mağaza Resmi"}/>
-                    </VStack>
+                    </Box>
                     <FormInput placeholder={"Mağaza Adı"} name={"name"} control={control}/>
-                </VStack>
+                </Box>
                 <Box className={"px-2"}>
                     <Button1
                         onPress={handleSubmit(handleNext)}
                         text={isLoading ? "Kaydediliyor..." : "Next"}
                     />
                 </Box>
-            </VStack>
+            </Box>
         </>
     );
 };

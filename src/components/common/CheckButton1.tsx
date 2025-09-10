@@ -15,7 +15,7 @@ interface Props {
 const CheckButton1 = ({size, text, fontFamily = "myFont", icon, onPress, active}: Props) => (
 
     <Button onPress={onPress} size={size} variant={"outline"}
-            className={twMerge("w-full h-full rounded-2xl justify-between px-8 bg-transparent transition-[border-color] duration-200 ease-in-out border-2",active?" border-primary-400":" border-gray-300")}>
+            className={twMerge("w-full h-14 rounded-2xl justify-between px-8 bg-transparent transition-[border-color] duration-200 ease-in-out border-2",active?" border-primary-400":" border-gray-300")}>
         <ButtonText className={twMerge("transition-[color] duration-200",active?"text-primary-500":"text-gray-300")} style={{fontFamily: fontFamily}}>{text}</ButtonText>
         {/*<ButtonSpinner />*/}
         <ButtonIcon width={24} height={24} as={icon}  />
