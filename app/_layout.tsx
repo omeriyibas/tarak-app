@@ -1,4 +1,3 @@
-import 'react-native-reanimated';
 import {useEffect, useState} from "react";
 import {Slot, SplashScreen} from "expo-router";
 import {useFonts} from "expo-font";

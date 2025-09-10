@@ -1,31 +1,70 @@
+import { Input, InputField, InputIcon, InputSlot } from "@/src/components/ui/input";
+import { AlertCircleIcon } from "lucide-react-native";
 import React from "react";
-import {Input, InputField, InputIcon, InputSlot} from "@/src/components/ui/input";
-
+import { Controller } from "react-hook-form";
+import {
+    FormControl,
+    FormControlError, FormControlErrorIcon, FormControlErrorText,
+    FormControlHelper,
+    FormControlHelperText
+} from "../ui/form-control";
 
 interface Props {
-    size?: "sm" | "md" | "lg";
-    placeholder?: string;
-    icon?: any;
-    isDisabled?: boolean;
+    icon: any;
+    size?: "sm" | "md" | "lg" | "xl";
+    type?: "text" | "password" | "email" | "number" | "tel" | "url";
+    helperText?: string;
+    placeholder: string;
+    // name: string;
+    // control: any;
+    value:string;
+    setValue:(val:string)=>void;
     fontFamily?:string;
+    isRequired?:boolean;
+    isDisabled?:boolean;
+    isReadOnly?:boolean;
+    error?:boolean;
+    onBlur?:any;
+
 }
 
-const Input1 = ({fontFamily="myFont",size,icon,isDisabled,placeholder}:Props) => {
-    return(
-        <Input
-            variant="outline"
+const FormInput = ({onBlur,error,value,setValue,fontFamily="myFont",isRequired,isDisabled,isReadOnly,control, name, placeholder, icon, size, helperText, type = "text"}: Props) => {
+    return (
+
+        <FormControl
+            isInvalid={!!error}
             size={size}
             isDisabled={isDisabled}
-            className={"rounded-lg h-[6vh]"}
-            // isInvalid={false}
-            // isReadOnly={false}
+            isReadOnly={isReadOnly}
+            isRequired={isRequired}
         >
-            {icon&&<InputSlot className="pl-3">
-                <InputIcon as={icon}/>
-            </InputSlot>}
-            <InputField style={{fontFamily:fontFamily}} placeholder={placeholder} />
-        </Input>
-    )
-}
+            <Input className={"rounded-lg h-[6vh]"}
+                   size="md">
+                {icon && <InputSlot className="pl-3">
+                    <InputIcon as={icon}/>
+                </InputSlot>}
+                <InputField
+                    style={{fontFamily:fontFamily}}
+                    type={type}
+                    placeholder={placeholder}
+                    value={value}
+                    onChangeText={(val)=>setValue(val)}
+                    onBlur={onBlur}
+                />
+            </Input>
+            {helperText && <FormControlHelper>
+                <FormControlHelperText style={{fontFamily:fontFamily}}>
+                    {helperText}
+                </FormControlHelperText>
+            </FormControlHelper>}
+            <FormControlError>
+                <FormControlErrorIcon as={AlertCircleIcon} className="text-red-500"/>
+                <FormControlErrorText className="text-red-500" style={{fontFamily:fontFamily}}>
+                    {error?.message}
+                </FormControlErrorText>
+            </FormControlError>
+        </FormControl>
+    );
+};
 
-export default Input1;
+export default FormInput;

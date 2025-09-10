@@ -1,5 +1,5 @@
 import PasswordFormInput from "@/src/components/auth/PasswordFormInput";
-import Button1 from "@/src/components/common/button1";
+import Button1 from "@/src/components/common/Button1";
 import FormInput from "@/src/components/common/FormInput";
 import Head1 from "@/src/components/common/Head1";
 import { Box } from "@/src/components/ui/box";

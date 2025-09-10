@@ -2,6 +2,7 @@ import {configureStore, combineReducers} from '@reduxjs/toolkit';
 import authReducer, {hydrateFromStorage, logout, setTokens} from '../features/auth/slice';
 import progressReducer from '../features/progress/slice';
 import {setAuthCallbacks} from "@/src/services/api";
+import photoReducer from "../features/photo/slice";
 import {storage} from "@/src/lib/storageAdapter";
 import {ACCESS_KEY, REFRESH_KEY} from "@/src/constants/auth";
 import {authListener} from "@/src/features/auth/listener";
@@ -11,6 +12,7 @@ import {progressListener} from "@/src/features/progress/listener";
 const rootReducer = combineReducers({
     progress: progressReducer,
     auth: authReducer,
+    photo: photoReducer,
     // user: userReducer,
 });
 const store = configureStore({

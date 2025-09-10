@@ -3,8 +3,12 @@ import {selectIsAuthenticated} from "@/src/features/auth/selectors";
 import {selectStep} from "@/src/features/progress/selectors";
 import {FlowType, SCREEN_NAMES} from "@/src/constants/progress";
 import {Redirect, useRouter} from "expo-router";
-import {useEffect} from "react";
+import { configureReanimatedLogger } from 'react-native-reanimated';
 
+// Uygulama başlamadan önce çağır
+configureReanimatedLogger({
+    strict: false,
+});
 
 export default function Home() { //yükleme ekranı
 
@@ -35,6 +39,8 @@ export default function Home() { //yükleme ekranı
     //         router.replace(`/screens/step/${SCREEN_NAMES.details[step - 1]}`)
     //     }
     // }, [step]);
+
+    // return <Redirect href={"/screens/step/HourScreen"}/>
 
 
     if (isAuth) {

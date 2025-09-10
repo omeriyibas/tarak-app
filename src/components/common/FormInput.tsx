@@ -10,7 +10,7 @@ import {
 } from "../ui/form-control";
 
 interface Props {
-    icon: any;
+    icon?: any;
     size?: "sm" | "md" | "lg" | "xl";
     type?: "text" | "password" | "email" | "number" | "tel" | "url";
     helperText?: string;
